@@ -1,4 +1,4 @@
-wait(10)
+wait(60)
 
 spawn(function(antiafk)
     local VirtualInputManager = game:GetService("VirtualInputManager")
